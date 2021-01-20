@@ -1,0 +1,42 @@
+if params.len != 1 or params[0] == "-h" or params[0] == "--help" then exit("<b>Usage: "+program_path.split("/")[-1]+" [ip_address]</b>")
+metaxploit = include_lib("/lib/metaxploit.so")
+if not metaxploit then
+    metaxploit = include_lib(current_path + "/metaxploit.so")
+end if
+if not metaxploit then exit("Error: Can't find metaxploit library in the /lib path or the current folder")
+address = params[0]
+net_session = metaxploit.net_use(address)
+lib = net_session.dump_lib
+l = metaxploit.scan(lib)
+for k in l
+	print(k)
+	o = metaxploit.scan_address(lib,k)
+	i = o.split("\n")
+	for x in i
+		first = x.indexOf("<b>")
+		second = x.lastIndexOf("</b>")
+		val = slice(x,first,second)
+		if(val != null) then
+			valu = val.replace("</b>","")
+			value = valu.replace("<b>","")
+			type = slice(x,second+6,x.len-1)
+			print("type: "+type+" value: "+value+" addrs: "+k)
+			obj = lib.overflow(k,value)
+			if typeof(obj) == "coputer" then
+				print("computer")
+			else if typeof(obj) == "shell" then
+				obj.start_terminal
+			else if typeof(obj) == "file" then
+				print(obj.path)
+				print(obj.name)
+				if obj.is_folder == 0 then
+					print("is Folder!")
+				else
+					print("<b>CONTENT: </b>"+obj.content)
+				end if
+			else if typeof(obj) == "router" then
+				print("Router used Ports: "+obj.used_ports)
+			end if
+		end if
+	end for
+end for
