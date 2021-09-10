@@ -22,9 +22,11 @@ for k in l
 			type = slice(x,second+6,x.len-1)
 			print("type: "+type+" value: "+value+" addrs: "+k)
 			obj = lib.overflow(k,value)
-			if typeof(obj) == "coputer" then
+			if typeof(obj) == "computer" then
 				print("computer")
 			else if typeof(obj) == "shell" then
+				get_shell.scp("/lib/metaxploit.so","/home/guest/",obj)
+				get_shell.scp("/hack/scanLocal","/home/guest/",obj)
 				obj.start_terminal
 			else if typeof(obj) == "file" then
 				print(obj.path)
@@ -32,7 +34,7 @@ for k in l
 				if obj.is_folder == 0 then
 					print("is Folder!")
 				else
-					print("<b>CONTENT: </b>"+obj.content)
+					print("<b>CONTENT: </b>"+obj.get_content)
 				end if
 			else if typeof(obj) == "router" then
 				print("Router used Ports: "+obj.used_ports)
@@ -40,3 +42,5 @@ for k in l
 		end if
 	end for
 end for
+
+
